@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-
 	"golang.org/x/exp/constraints"
 )
 
@@ -38,18 +37,6 @@ func FindIf[T any](slice []T, pred func(T) bool) (int, bool) {
 	return -1, false
 }
 
-/*
-// AdjacentFind devuelve el índice del primer par adyacente de elementos que satisface el predicado, o -1 si no hay tal par.
-func AdjacentFind[T any](slice []T, pred func(T, T) bool) int {
-	for i := 0; i < len(slice)-1; i++ {
-		if pred(slice[i], slice[i+1]) {
-			return i
-		}
-	}
-	return -1
-}
-*/
-
 // Equal comprueba si dos listas son iguales.
 func Equal[T comparable](slice1, slice2 []T) bool {
 
@@ -66,32 +53,44 @@ func Equal[T comparable](slice1, slice2 []T) bool {
 	}
 	return true
 }
-/*
+
 // ReplaceIf reemplaza los elementos que satisfacen el predicado por un nuevo valor.
 func ReplaceIf[T any](slice []T, newValue T, pred func(T) bool) int {
+
+	fmt.Printf("el contenido de slice []T: %v - len:%v\n", slice, len(slice))
+
 	replaced := 0
 	for i, v := range slice {
 		if pred(v) {
 			slice[i] = newValue
+			println("remplazamos el", v, "con el valor de",  slice[i])
 			replaced++
 		}
 	}
+	fmt.Printf("Al final de remplazar todo nos queda asi []T: %v \n", slice)
+
 	return replaced
 }
 
 // RemoveIf elimina los elementos que satisfacen el predicado y devuelve el nuevo tamaño de la lista.
 func RemoveIf[T any](slice []T, pred func(T) bool) []T {
+
+        fmt.Printf("el contenido de slice []T: %v - len:%v\n", slice, len(slice))
+
 	result := slice[:0]
 	for _, v := range slice {
 		if !pred(v) {
-			result = append(result, v)
+			result = append(result, v) // NO TIENE SENTIDO ESTO
 		}
 	}
+
+	fmt.Printf("el contenido de slice despues de borrar []T: %v - len:%v\n", slice, len(slice))
+
 	return result
 }
 
-*/
-// IsSorted comprueba si la lista está ordenada. 
+
+// IsSorted comprueba si la lista está ordenada.
 func IsSorted[T constraints.Ordered](slice []T) bool {
 
         fmt.Printf("el contenido de []T: %T %v - len:%v - cap:%v\n", slice, slice, len(slice), cap(slice))
@@ -159,11 +158,6 @@ func main() {
 
 	fmt.Println("-----------------------------------------------------------------------------------")
 
-	/*
-	   fmt.Println(AdjacentFind([]int{1, 2, 2, 4}, func(x, y int) bool { return x == y })) // 1
-	*/
-	fmt.Println("-----------------------------------------------------------------------------------")
-
 	fmt.Println("Aqui la funcion Equal: ")
 	num1 := []int{1, 2, 3}
 	num2 := []int{1, 2, 3}
@@ -178,33 +172,41 @@ func main() {
 
 	fmt.Println("-----------------------------------------------------------------------------------")
 
-/*	
-	   slice := []int{1, 2, 3, 4}
-	   fmt.Println(ReplaceIf(slice, 0, func(x int) bool { return x > 2 })) // 2
-	   fmt.Println(slice) // [1, 2, 0, 0]
-	   fmt.Println(RemoveIf([]int{1, 2, 3, 4}, func(x int) bool { return x > 2 })) // [1, 2]
-*/	   
+	fmt.Println("Usando la funcion ReplateIf")
+	slice := []int{1, 2, 3, 4}
+	fmt.Println(ReplaceIf(slice, 0, func(x int) bool { return x > 2 })) // sustituir 0 por los numeros mayores de 2
+	slice2 := []string{"PERRO", "GATO", "RATON", "GATO"}
+	ReplaceIf(slice2, "LEON", func(x string) bool { return x == "GATO" }) // sustituir GATO por LEON
+
+        fmt.Println("-----------------------------------------------------------------------------------")
+
+        fmt.Println("Usando la funcion RemoveIf")
+
+	fmt.Println(slice) // [1, 2, 0, 0]
+        RemoveIf(slice, func(x int) bool { return x < 2 }) // Borrar menores de 2
+
+	fmt.Println(slice2)  // PERRO, LEON, RATON, LEON
+        RemoveIf(slice2, func(x string) bool { return x == "LEON" })
+
+        fmt.Println("-----------------------------------------------------------------------------------")
+
+        fmt.Println("La lista esta ordenada:")
+        fmt.Println(IsSorted([]string{"CASA", "PEPE", "LOLA"})) //false
+        fmt.Println(IsSorted([]string{"CASA", "LOLA", "PEPA"})) //true
+        fmt.Println(IsSorted([]int{1, 2, 3, 4})) // true
+        // Para ordenar los numeros complejos debe ser primero la parte real y despues la parte imaginaria.
+	// Como vamos a aplicar para esta funcion IsSorted los numeros complejos?
+        // order := []complex64{1 + 2i, 3 + 4i, 5 + 6i}
+        // fmt.Println(IsSorted(order))
+
            fmt.Println("-----------------------------------------------------------------------------------")
 
-           fmt.Println("La lista esta ordenada:")
-           fmt.Println(IsSorted([]string{"CASA", "PEPE", "LOLA"})) //false
-	   fmt.Println(IsSorted([]string{"CASA", "LOLA", "PEPA"})) //true
-	   fmt.Println(IsSorted([]int{1, 2, 3, 4})) // true
-	   // Para ordenar los numeros complejos debe ser primero la parte real y despues la parte imaginaria.
-	   // Como vamos a aplicar para esta funcion IsSorted los numeros complejos?
-//           order := []complex64{1 + 2i, 3 + 4i, 5 + 6i}
-//           fmt.Println(IsSorted(order))
-
-           fmt.Println("-----------------------------------------------------------------------------------")
-	   
 	   fmt.Println("Mergear la listas:" )
 	   fmt.Println(Merge([]int{1, 3, 5}, []int{2, 4, 6})) // [1, 2, 3, 4, 5, 6]
            fmt.Println(Merge([]string{"HOLA","QUE"}, []string{"POR?","NOSE"}))
 	   // Para ordenar los numeros complejos debe ser primero la parte real y despues la parte imaginaria.
            // Como vamos a aplicar para esta funcion Merge los numeros complejos?
-//	   aa := []complex64{1 + 2i, 3 + 4i, 5 + 6i}
-//         cc := []complex64{2 + 5i, 5 + 6i, 6 + 7i}
-//	   fmt.Println(Merge(aa, cc))
-
-
+           // aa := []complex64{1 + 2i, 3 + 4i, 5 + 6i}
+           // cc := []complex64{2 + 5i, 5 + 6i, 6 + 7i}
+	   //fmt.Println(Merge(aa, cc))
 }
