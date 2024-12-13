@@ -69,31 +69,28 @@ func ReplaceIf[T any](slice []T, newValue T, pred func(T) bool) int {
 	}
 	fmt.Printf("Al final de remplazar todo nos queda asi []T: %v \n", slice)
 
-	return replaced
+	return replaced // es un integer pero seria guay devolver en la funcion []T.
 }
 
 // RemoveIf elimina los elementos que satisfacen el predicado y devuelve el nuevo tamaño de la lista.
 func RemoveIf[T any](slice []T, pred func(T) bool) []T {
 
-        fmt.Printf("el contenido de slice []T: %v - len:%v\n", slice, len(slice))
-
+	fmt.Printf("el contenido de slice []T: %v - len:%v\n", slice, len(slice))
 	result := slice[:0]
 	for _, v := range slice {
 		if !pred(v) {
-			result = append(result, v) // NO TIENE SENTIDO ESTO
+			result = append(result, v)
 		}
 	}
-
-	fmt.Printf("el contenido de slice despues de borrar []T: %v - len:%v\n", slice, len(slice))
-
-	return result
+	fmt.Printf("el contenido de slice despues de borrar []T: %v - len:%v\n", result, len(result))
+	return result // Aqui esta la lista nueva quitando los elementos que hemos eliminado.
 }
 
 
 // IsSorted comprueba si la lista está ordenada.
 func IsSorted[T constraints.Ordered](slice []T) bool {
 
-        fmt.Printf("el contenido de []T: %T %v - len:%v - cap:%v\n", slice, slice, len(slice), cap(slice))
+    fmt.Printf("el contenido de []T: %T %v - len:%v - cap:%v\n", slice, slice, len(slice), cap(slice))
 	for i := 1; i < len(slice); i++ {
 		if slice[i-1] > slice[i] {
 			return false
@@ -121,13 +118,16 @@ func Merge[T constraints.Ordered](slice1, slice2 []T) []T {
 	}
 	result = append(result, slice1[i:]...)
 	result = append(result, slice2[j:]...)
-	return result
+
+	return result //Devuelve la lista mergeada.
 }
 
 
 func main() {
 
-	// se define aqui una funcion generica, "func(x int) bool {}"
+	fmt.Println("EJERCICIO1:")
+
+	fmt.Println("-----------------------------------------------------------------------------------")
 	booleano := AnyOf([]int{2, 1, 4, 6}, func(x int) bool { return x > 4 })
 	fmt.Println("Algun numero cumple la condicion de la funcion AnyOf que le estamos pasando? ", booleano) // true porque hay algun numero mayor de 2 (3,4)
 	booleano2 := AnyOf([]int{1, 2, 3, 4}, func(x int) bool { return x > 5 })
@@ -157,7 +157,6 @@ func main() {
 	}
 
 	fmt.Println("-----------------------------------------------------------------------------------")
-
 	fmt.Println("Aqui la funcion Equal: ")
 	num1 := []int{1, 2, 3}
 	num2 := []int{1, 2, 3}
@@ -171,42 +170,36 @@ func main() {
 	fmt.Println(Equal(a, c)) // false
 
 	fmt.Println("-----------------------------------------------------------------------------------")
-
-	fmt.Println("Usando la funcion ReplateIf")
+	fmt.Println("Usando la funcion ReplateIf:")
 	slice := []int{1, 2, 3, 4}
 	fmt.Println(ReplaceIf(slice, 0, func(x int) bool { return x > 2 })) // sustituir 0 por los numeros mayores de 2
 	slice2 := []string{"PERRO", "GATO", "RATON", "GATO"}
 	ReplaceIf(slice2, "LEON", func(x string) bool { return x == "GATO" }) // sustituir GATO por LEON
 
-        fmt.Println("-----------------------------------------------------------------------------------")
-
-        fmt.Println("Usando la funcion RemoveIf")
-
+    fmt.Println("-----------------------------------------------------------------------------------")
+    fmt.Println("Usando la funcion RemoveIf:")
 	fmt.Println(slice) // [1, 2, 0, 0]
-        RemoveIf(slice, func(x int) bool { return x < 2 }) // Borrar menores de 2
-
+    RemoveIf(slice, func(x int) bool { return x < 2 }) // Borrar menores de 2
 	fmt.Println(slice2)  // PERRO, LEON, RATON, LEON
-        RemoveIf(slice2, func(x string) bool { return x == "LEON" })
+    RemoveIf(slice2, func(x string) bool { return x == "LEON" })
 
-        fmt.Println("-----------------------------------------------------------------------------------")
-
-        fmt.Println("La lista esta ordenada:")
-        fmt.Println(IsSorted([]string{"CASA", "PEPE", "LOLA"})) //false
-        fmt.Println(IsSorted([]string{"CASA", "LOLA", "PEPA"})) //true
-        fmt.Println(IsSorted([]int{1, 2, 3, 4})) // true
-        // Para ordenar los numeros complejos debe ser primero la parte real y despues la parte imaginaria.
+    fmt.Println("-----------------------------------------------------------------------------------")
+    fmt.Println("La lista esta ordenada usando IsSorted: ")
+    fmt.Println(IsSorted([]string{"CASA", "PEPE", "LOLA"})) //false
+    fmt.Println(IsSorted([]string{"CASA", "LOLA", "PEPA"})) //true
+    fmt.Println(IsSorted([]int{1, 2, 3, 4})) // true
+    // Para ordenar los numeros complejos debe ser primero la parte real y despues la parte imaginaria.
 	// Como vamos a aplicar para esta funcion IsSorted los numeros complejos?
-        // order := []complex64{1 + 2i, 3 + 4i, 5 + 6i}
-        // fmt.Println(IsSorted(order))
+    // order := []complex64{1 + 2i, 3 + 4i, 5 + 6i}
+    // fmt.Println(IsSorted(order))
 
-           fmt.Println("-----------------------------------------------------------------------------------")
-
-	   fmt.Println("Mergear la listas:" )
-	   fmt.Println(Merge([]int{1, 3, 5}, []int{2, 4, 6})) // [1, 2, 3, 4, 5, 6]
-           fmt.Println(Merge([]string{"HOLA","QUE"}, []string{"POR?","NOSE"}))
-	   // Para ordenar los numeros complejos debe ser primero la parte real y despues la parte imaginaria.
-           // Como vamos a aplicar para esta funcion Merge los numeros complejos?
-           // aa := []complex64{1 + 2i, 3 + 4i, 5 + 6i}
-           // cc := []complex64{2 + 5i, 5 + 6i, 6 + 7i}
-	   //fmt.Println(Merge(aa, cc))
+    fmt.Println("-----------------------------------------------------------------------------------")
+	fmt.Println("Mergear la listas usando Merge: " )
+	fmt.Println(Merge([]int{1, 3, 5}, []int{2, 4, 6})) // [1, 2, 3, 4, 5, 6]
+    fmt.Println(Merge([]string{"HOLA","QUE"}, []string{"POR?","NOSE"}))
+	// Para ordenar los numeros complejos debe ser primero la parte real y despues la parte imaginaria.
+    // Como vamos a aplicar para esta funcion Merge los numeros complejos?
+    // aa := []complex64{1 + 2i, 3 + 4i, 5 + 6i}
+    // cc := []complex64{2 + 5i, 5 + 6i, 6 + 7i}
+	//fmt.Println(Merge(aa, cc))
 }
